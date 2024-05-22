@@ -1,0 +1,157 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SakeFigureShop.Domains
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject SakeFigureShop.Data.ApplicationDbContext context
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SakeFigureShop</title>
+    <link rel="icon" href="~/images/logo.jpg" />
+    <link rel="stylesheet" href="~/lib/mdb/css/mdb.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SakeFigureShop.styles.css" asp-append-version="true" />
+    <link rel='stylesheet' href='https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css'>
+    <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" 
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer" 
+    />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet" />
+
+</head>
+<body>
+    <header>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
+        <script src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
+        <script src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+        <nav class="navbar navbar-expand-md navbar-toggleable-md navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="/images/logo.jpg"
+                         class="rounded-circle mx-3"
+                         alt="Sake Figure Shop Logo"
+                         loading="lazy"
+                         width="40"
+                         height="40"
+                    >
+                    Sake Figure
+                </a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-mdb-toggle="collapse"
+                        data-mdb-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="navbar-collapse collapse d-md-inline-flex justify-content-between" id="navbarSupportedContent">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Manager" asp-action="Index">Quản lý</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ShopAll">Mua sắm</a>
+                        </li>
+                    </ul>
+                    <div class="navbar-nav d-flex gap-2">
+                        @{
+                            var amount = "";
+                        }
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            var user = context.Users.Where(u => u.Email == User.Identity.Name).FirstOrDefault();
+                            amount = context.CartItems.Where(c => c.UserId == user.Id).ToList().Count().ToString();
+                        }
+                        else {
+                            amount = "0";
+                        }
+                        <form class="d-flex" method="get" asp-action="Index" asp-controller="Cart">
+                            <button class="btn btn-outline-dark" type="submit">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                Giỏ hàng
+                                <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-badge">@amount</span>
+                            </button>
+                        </form>
+                        <partial name="_LoginPartial" />
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.29657406162!2d106.59673587590608!3d10.788582258967633!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752df6ce0f0317%3A0x5fd7e018bd223b26!2sSake%20Figure%20Shop!5e0!3m2!1sen!2s!4v1698667494338!5m2!1sen!2s" 
+                    width="90%"
+                    height="300"
+                    style="border:0;max-width: 900px"
+                    class="mx-auto"
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+        <div class="container">
+            <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
+                <p>&copy; 2023 - SakeFigureShop</p>
+                <ul class="list-unstyled d-flex">
+                    <li class="ms-3">
+                        <a target="_blank" class="link-body-emphasis" href="https://www.facebook.com/sakefigure">
+                            <i class="fa-brands fa-facebook fa-xl" style="color: #000000;"></i>
+                        </a>
+                    </li>
+                    <li class="ms-3">
+                        <a class="link-body-emphasis" href="mailto:figaholic320@gmail.com">
+                            <i class="fa-solid fa-envelope fa-xl" style="color: #000000;"></i>
+                        </a>
+                    </li>
+                    <li class="ms-3">
+                        <a class="link-body-emphasis" href="tel:+84933598388">
+                            <i class="fa-solid fa-phone fa-xl" style="color: #000000;"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    <partial name="_ToastPartial" />
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <script>
+            $(() => {
+                let cart = JSON.parse(localStorage.getItem("cartItem") || "{}")
+                $("#cart-badge").html(Object.keys(cart).length)
+            })
+        </script>
+    }
+    <script src="~/lib/mdb/js/mdb.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

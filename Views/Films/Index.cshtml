@@ -1,0 +1,59 @@
+﻿@model IEnumerable<SakeFigureShop.Domains.Film>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Danh sách Anime</h1>
+
+<p>
+    <a asp-action="Create">Tạo mới Anime</a>
+</p>
+<div class="table-responsive">
+    <table id="anime-table" class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#anime-table').DataTable();
+        $('.dataTables_length').addClass('bs-select');
+    });
+</script>
+@{
+    var message = ViewData["Message"] != null ? ViewData["Message"]?.ToString() : null;
+}
+@if (message != null)
+{
+    <script>
+        $(() => {
+            $("#liveToast").removeClass("hide").addClass("show")
+            $("#toast-content").html(`@message`)
+            setTimeout(() => {
+                $("#close-btn").click()
+            }, 2000)
+        })
+    </script>
+}
